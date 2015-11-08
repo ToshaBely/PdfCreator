@@ -41,11 +41,11 @@ public class PdfStatisticCreator {
 
     public void createParamsHeader(BaseTable table, float height, PDFont font) {
         Row row = table.createRow(height);
-        Cell cell = row.createCell(100 / 5 * 2, "Name");
+        Cell cell = row.createCell(100 / 5, "Name");
         cell.setFont(font);
         cell = row.createCell(100 / 5 * 2, "Login");
         cell.setFont(font);
-        cell = row.createCell(100 / 5, "ID");
+        cell = row.createCell(100 / 5 * 2, "ID");
         cell.setFont(font);
     }
 
@@ -97,68 +97,44 @@ public class PdfStatisticCreator {
             resultList.add(nextLine);
         }
         return getMultiStringFromList(resultList);
-//        if (textWidth > cellWidth) {
-//            List <String> list = new ArrayList<String>();
-//            float kf = textWidth / cellWidth;
-//            int maxLength = (int) Math.floor((float) text.length() / kf);
-//            int position = 0; //maxLength;
-//            while (position + maxLength < text.length()) {
-//                int spacePlace = text.lastIndexOf(" ", position + maxLength);
-//                if (spacePlace < position) {
-//                    list.add(text.substring(position, position + maxLength));
-//                    position += maxLength;
-//                } else {
-//                    spacePlace++;
-//                    String line = text.substring(position, spacePlace);
-//                    position += line.length();
-//                    if (StringUtils.isNotBlank(line)) {
-//                        list.add(line);
-//                    }
-//                }
-//            }
-////            position -= maxLength;
-//            if (position != text.length()) {
-//                list.add(text.substring(position));
-//            }
-//            return getMultiStringFromList(list);
-//        } else {
-//            return text;
-//        }
     }
 
     private List<String> splitCellString(String string, float cellWidth, float fontSize, PDFont font) throws IOException {
-        float textWidth = font.getStringWidth(StringUtils.repeat("D", string.length())) / 1000 * (fontSize);
-
         List <String> list = new ArrayList<String>();
-        float kf = textWidth / cellWidth;
-        int maxLength = (int) Math.floor((float) string.length() / kf);
-        int spacePlace = string.lastIndexOf(" ", maxLength);
         String firstString;
+
+        float textWidth = font.getStringWidth(StringUtils.repeat("E", string.length())) / 1000 * (fontSize);
+        float kf = textWidth / cellWidth;
+        int firstLength = (int) Math.floor((float) string.length() / kf);
+        int spacePlace = string.lastIndexOf(" ", firstLength);
+
+        //TODO: create searching all split-symbols
+
         if (spacePlace == -1) {
-            firstString = string.substring(0, maxLength);
-            textWidth = font.getStringWidth(firstString) / 1000 * fontSize;
-            float size = cellWidth / textWidth - 1;
-            if (size > 0.1) {
-                int lengthSize = (int) Math.floor((float) firstString.length() / size);
-                firstString += string.substring(maxLength, maxLength + lengthSize);
-                maxLength += lengthSize;
-            }
+            firstString = string.substring(0, firstLength);
         } else {
             spacePlace++;
             if (StringUtils.isBlank(string.substring(0, spacePlace))) {
                 return splitCellString(string.substring(spacePlace), cellWidth, fontSize, font);
             }
             firstString = string.substring(0, spacePlace);
-            textWidth = font.getStringWidth(firstString) / 1000 * fontSize;
-            float size = cellWidth / textWidth - 1;
-            if (size > 0.1) {
-                int lengthSize = (int) Math.floor((float) firstString.length() / size);
-                firstString += string.substring(maxLength, maxLength + lengthSize);
+            firstLength = spacePlace;
+        }
+
+        textWidth = font.getStringWidth(StringUtils.repeat("T", firstString.length())) / 1000 * fontSize;
+        float freeSpace = cellWidth / textWidth - 1;
+        if (freeSpace > 0.1) {
+            freeSpace -= 0.08;
+            kf = firstString.length() / textWidth;
+            int addLength = (int) (cellWidth * freeSpace * kf);
+            if (firstLength + addLength > string.length()) {
+                addLength = string.length() - firstLength;
             }
-            maxLength = spacePlace;
+            firstString += string.substring(firstLength, firstLength + addLength);
+            firstLength += addLength;
         }
         list.add(firstString);
-        list.add(string.substring(maxLength));
+        list.add(string.substring(firstLength));
         return list;
     }
 
@@ -175,6 +151,7 @@ public class PdfStatisticCreator {
     }
 
     public static void savePdf (PDDocument doc, String dest) throws IOException {
+        dest = "/home/anton/" + dest;
         File file = new File(dest + ".pdf");
         try {
             doc.save(file);

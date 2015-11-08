@@ -44,7 +44,7 @@ public class HelloController {
     private List<MyClass> getList() {
         List<MyClass> list = new ArrayList<MyClass>();
         list.add(new MyClass("sd- Two 8-Three ggFour Five- Six -Seven-f -asd asd Eight", "abely", 1));
-        list.add(new MyClass("skoval", "skoval", 2));
+        list.add(new MyClass("OneAAAAhdfjSDFJKFJSDHJFHDKLFJDKsdhfjsdhfksdjhfjksdhfjkhdjFDSGSDGkfsdhfjhdjfkdfsdAAAAAAAAAAAAAAAAAAAAAAA skoval", "skoval", 2));
         list.add(new MyClass("abely", "AAA", 3));
         list.add(new MyClass("hello", "world", 4));
         for (int i = 0; i < 5; i++) {
