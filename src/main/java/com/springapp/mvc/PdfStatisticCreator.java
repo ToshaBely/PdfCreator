@@ -77,7 +77,7 @@ public class PdfStatisticCreator {
         String nextLine = "";
         for (String line : list) {
             line = nextLine + " " + line;
-            textWidth = font.getStringWidth(StringUtils.repeat("D", line.length())) / 1000 * (fontSize);
+            textWidth = font.getStringWidth(line.toUpperCase()) / 1000 * (fontSize);
             if (textWidth > cellWidth) {
                 List<String> splitList = splitCellString(line, cellWidth, fontSize, font);
                 resultList.add(splitList.get(0));
@@ -86,12 +86,12 @@ public class PdfStatisticCreator {
                 resultList.add(line);
             }
         }
-        textWidth = font.getStringWidth(StringUtils.repeat("D", nextLine.length())) / 1000 * (fontSize);
+        textWidth = font.getStringWidth(nextLine.toUpperCase()) / 1000 * (fontSize);
         while (textWidth > cellWidth) {
             List<String> splitList = splitCellString(nextLine, cellWidth, fontSize, font);
             resultList.add(splitList.get(0));
             nextLine = splitList.get(1);
-            textWidth = font.getStringWidth(StringUtils.repeat("D", nextLine.length())) / 1000 * (fontSize);
+            textWidth = font.getStringWidth(nextLine.toUpperCase()) / 1000 * (fontSize);
         }
         if (StringUtils.isNotBlank(nextLine)) {
             resultList.add(nextLine);
@@ -102,10 +102,9 @@ public class PdfStatisticCreator {
     private List<String> splitCellString(String string, float cellWidth, float fontSize, PDFont font) throws IOException {
         List <String> list = new ArrayList<String>();
         String firstString;
-
-        float textWidth = font.getStringWidth(StringUtils.repeat("E", string.length())) / 1000 * (fontSize);
-        float kf = textWidth / cellWidth;
-        int firstLength = (int) Math.floor((float) string.length() / kf);
+        float upperTextWidth = font.getStringWidth(string.toUpperCase()) / 1000 * fontSize;
+        float kf = cellWidth / upperTextWidth;
+        int firstLength = (int) Math.floor((float) string.length() * kf);
         int spacePlace = string.lastIndexOf(" ", firstLength);
 
         //TODO: create searching all split-symbols
@@ -121,11 +120,12 @@ public class PdfStatisticCreator {
             firstLength = spacePlace;
         }
 
-        textWidth = font.getStringWidth(StringUtils.repeat("T", firstString.length())) / 1000 * fontSize;
-        float freeSpace = cellWidth / textWidth - 1;
+        float textWidth1 = font.getStringWidth(firstString) / 1000 * fontSize;
+        upperTextWidth = font.getStringWidth(firstString.toUpperCase()) / 1000 * fontSize;
+        float freeSpace = cellWidth / textWidth1 - 1;
         if (freeSpace > 0.1) {
-            freeSpace -= 0.08;
-            kf = firstString.length() / textWidth;
+            freeSpace -= 0.05;
+            kf = Math.max(firstString.length() - 5, 0) / upperTextWidth;
             int addLength = (int) (cellWidth * freeSpace * kf);
             if (firstLength + addLength > string.length()) {
                 addLength = string.length() - firstLength;

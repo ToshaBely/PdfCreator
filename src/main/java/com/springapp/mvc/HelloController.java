@@ -45,8 +45,8 @@ public class HelloController {
         List<MyClass> list = new ArrayList<MyClass>();
         list.add(new MyClass("sd- Two 8-Three ggFour Five- Six -Seven-f -asd asd Eight", "abely", 1));
         list.add(new MyClass("OneAAAAhdfjSDFJKFJSDHJFHDKLFJDKsdhfjsdhfksdjhfjksdhfjkhdjFDSGSDGkfsdhfjhdjfkdfsdAAAAAAAAAAAAAAAAAAAAAAA skoval", "skoval", 2));
-        list.add(new MyClass("abely", "AAA", 3));
-        list.add(new MyClass("hello", "world", 4));
+        list.add(new MyClass("abelyfhjhdjfdhfddfhdsjfhdjhfdsfdfjdksfjdjfkdfjkdjfdjfdsfkdjfjdkfdf fdshfjsdhfjdfdfsdf", "AAA", 3));
+        list.add(new MyClass("helloJFKSDVSDNHVHDJHFJSHIEJJKDSKFHDFJHDJFHDJHGFJHGJFHGRGRJHGJRHGJRGHRJ", "world", 4));
         for (int i = 0; i < 5; i++) {
             list.addAll(list);
         }
