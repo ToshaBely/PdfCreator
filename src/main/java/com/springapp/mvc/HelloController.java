@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("/")
 public class HelloController {
     @RequestMapping(method = RequestMethod.GET)
-    public String printWelcome(ModelMap model, HttpServletResponse response) throws IOException {
+    public String printWelcome(ModelMap model) throws IOException {
         samplePdf();
         model.addAttribute("message", "Hello world!");
         return "hello";

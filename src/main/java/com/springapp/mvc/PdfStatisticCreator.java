@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PdfStatisticCreator {
     public static PDPage addNewPage(PDDocument doc) {
@@ -102,27 +104,26 @@ public class PdfStatisticCreator {
     private List<String> splitCellString(String string, float cellWidth, float fontSize, PDFont font) throws IOException {
         List <String> list = new ArrayList<String>();
         String firstString;
+
         float upperTextWidth = font.getStringWidth(string.toUpperCase()) / 1000 * fontSize;
         float kf = cellWidth / upperTextWidth;
-        int firstLength = (int) Math.floor((float) string.length() * kf);
-        int spacePlace = string.lastIndexOf(" ", firstLength);
+        int firstLength = (int) Math.floor(string.length() * kf);
 
-        //TODO: create searching all split-symbols
-
-        if (spacePlace == -1) {
+        Pattern pattern = Pattern.compile("(.*\\W)+(.*)");
+        Matcher matcher = pattern.matcher(string.substring(0, firstLength));
+        if (!matcher.matches()) {
             firstString = string.substring(0, firstLength);
         } else {
-            spacePlace++;
-            if (StringUtils.isBlank(string.substring(0, spacePlace))) {
-                return splitCellString(string.substring(spacePlace), cellWidth, fontSize, font);
+            firstString = matcher.group(matcher.groupCount() - 1);
+            firstLength = firstString.length();
+            if (StringUtils.isBlank(firstString)) {
+                return splitCellString(string.substring(firstLength), cellWidth, fontSize, font);
             }
-            firstString = string.substring(0, spacePlace);
-            firstLength = spacePlace;
         }
 
-        float textWidth1 = font.getStringWidth(firstString) / 1000 * fontSize;
+        float textWidth = font.getStringWidth(firstString) / 1000 * fontSize;
         upperTextWidth = font.getStringWidth(firstString.toUpperCase()) / 1000 * fontSize;
-        float freeSpace = cellWidth / textWidth1 - 1;
+        float freeSpace = cellWidth / textWidth - 1;
         if (freeSpace > 0.1) {
             freeSpace -= 0.05;
             kf = Math.max(firstString.length() - 5, 0) / upperTextWidth;
@@ -147,7 +148,7 @@ public class PdfStatisticCreator {
             stringBuilder.append(string);
             stringBuilder.append("\n\r");
         }
-        return stringBuilder.toString();
+        return stringBuilder.substring(0, stringBuilder.length() - 2);
     }
 
     public static void savePdf (PDDocument doc, String dest) throws IOException {
